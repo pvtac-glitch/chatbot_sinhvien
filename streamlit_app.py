@@ -1,3 +1,10 @@
+import os
+# Tự động cài đặt openpyxl ngay khi ứng dụng vừa khởi động
+os.system("pip install openpyxl")
+
+import streamlit as st
+import pandas as pd
+# ... (giữ nguyên toàn bộ đoạn code xử lý bên dưới của bạn)
 import streamlit as st
 import pandas as pd
 
