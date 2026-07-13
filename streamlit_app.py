@@ -11,7 +11,7 @@ st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi. AI 
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
 # CẤU HÌNH AI GEMINI (Thay mã API của bạn vào đây)
-GEMINI_API_KEY = AQ.Ab8RN6LZprANU5uLT-cFkp3dfkHYFnYvBe_AdRQupPso4M3g5g
+GEMINI_API_KEY = "AQ.Ab8RN6LZprANU5uLT-cFkp3dfkHYFnYvBe_AdRQupPso4M3g5g"
 genai.configure(api_key=GEMINI_API_KEY)
 
 # 1. BẢNG ÁNH XẠ DANH MỤC
