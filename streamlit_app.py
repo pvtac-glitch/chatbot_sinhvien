@@ -1,15 +1,15 @@
 import streamlit as st
 import pandas as pd
 
-# Cấu hình giao diện hiển thị trên điện thoại/máy tính
+# Cấu hình giao diện gọn gàng cho điện thoại
 st.set_page_config(page_title="Hỗ trợ Sinh viên Khoa Ngoại ngữ", page_icon="🤖", layout="centered")
 
 st.title("🤖 TRỢ LÝ ẢO KHOA NGOẠI NGỮ")
-st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi và bấm nút để tra cứu thông tin tự động nhé.")
+st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập từ khóa câu hỏi và bấm nút để xem câu trả lời ngắn gọn.")
 
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
-# 1. KHAI BÁO BẢNG ÁNH XẠ CHÍNH XÁC
+# 1. BẢNG ÁNH XẠ DANH MỤC
 MENU_OPTIONS = {
     "Tổng quát về Khoa": "TONGQUAT",
     "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
@@ -19,49 +19,58 @@ MENU_OPTIONS = {
     "Câu lạc bộ": "CAULACBO"
 }
 
-# 2. Ô CHỌN LĨNH VỰC
-lua_chon_tieng_viet = st.selectbox(
-    "👉 Bước 1: Chọn lĩnh vực em muốn hỏi:",
-    list(MENU_OPTIONS.keys())
-)
+# 2. GIAO DIỆN CHỌN VÀ NHẬP
+lua_chon_tieng_viet = st.selectbox("👉 Bước 1: Chọn lĩnh vực em muốn hỏi:", list(MENU_OPTIONS.keys()))
+cau_hoi = st.text_input("👉 Bước 2: Nhập từ khóa câu hỏi của em:", placeholder="Ví dụ: sư phạm tiếng anh, ielts, học bổng...")
 
-# 3. Ô NHẬP CÂU HỎI
-cau_hoi = st.text_input("👉 Bước 2: Nhập từ khóa hoặc câu hỏi của em:", placeholder="Ví dụ: sư phạm tiếng anh, học bổng, ielts...")
-
-# 4. NÚT BẤM XỬ LÝ
+# 3. NÚT BẤM VÀ XỬ LÝ
 if st.button("🚀 Xem câu trả lời"):
     if not cau_hoi.strip():
         st.warning("Em vui lòng nhập câu hỏi trước khi bấm tìm kiếm nhé!")
     else:
-        with st.spinner("Đang lục tìm dữ liệu..."):
+        with st.spinner("Đang tra cứu..."):
             try:
                 selected_sheet = MENU_OPTIONS[lua_chon_tieng_viet]
-                
-                # Ép kiểu engine="openpyxl" để đọc file xlsx chuẩn xác
                 df = pd.read_excel(filepath, sheet_name=selected_sheet, engine="openpyxl")
                 
-                # Tìm kiếm thông tin dựa trên từ khóa sinh viên gõ
+                # Tách từ khóa để tìm kiếm linh hoạt (bỏ từ ngắn < 2 ký tự)
                 keywords = [kw.lower() for kw in cau_hoi.split() if len(kw) > 1]
-                results = []
+                match_rows = []
                 
                 for idx, row in df.iterrows():
                     row_text = " ".join(str(val).lower() for val in row.values)
                     if any(kw in row_text for kw in keywords):
-                        results.append(row)
+                        match_rows.append(row)
                 
-                st.subheader("📝 Kết quả tìm kiếm:")
-                if results:
-                    st.success(f"Tìm thấy {len(results)} thông tin liên quan đến câu hỏi của em:")
-                    for res in results:
-                        with st.container():
-                            res_dict = res.dropna().to_dict()
-                            for k, v in res_dict.items():
-                                if "unnamed" not in str(k).lower():
-                                    st.write(f"**{k}:** {v}")
-                            st.markdown("---")
+                st.subheader("📝 Câu trả lời dành cho em:")
+                
+                if match_rows:
+                    for row in match_rows:
+                        # Loại bỏ các ô trống (NaN) và các cột rác (Unnamed)
+                        clean_data = {str(k): str(v) for k, v in row.dropna().to_dict().items() if "unnamed" not in str(k).lower()}
+                        
+                        # --- XỬ LÝ HIỂN THỊ NGẮN GỌN THEO TỪNG DANH MỤC ---
+                        if selected_sheet == "HOCPHI" and "ngành" in clean_data and "học phí" in clean_data:
+                            st.info(f"📚 Ngành: **{clean_data['ngành']}** \n\n 💰 Học phí: **{clean_data['học phí']}**")
+                            
+                        elif selected_sheet == "HOCBONG" and "loại học bổng" in clean_data and "số tiền" in clean_data:
+                            st.info(f"🎁 Học bổng: **{clean_data['loại học bổng']}** \n\n 🎯 Điều kiện: {clean_data.get('điều kiện', 'Theo quy định')} \n\n 💵 Số tiền: **{clean_data['số tiền']}**")
+                            
+                        elif selected_sheet == "THUCTAP" and "ngành" in clean_data:
+                            st.info(f"📋 Thực tập ngành: **{clean_data['ngành']}** \n\n 📍 Địa điểm: {clean_data.get('địa điểm', 'Chưa rõ')} \n\n ⏳ Thời gian: **{clean_data.get('thời gian', '')}** (Điều kiện: {clean_data.get('điều kiện', '')})")
+                            
+                        elif selected_sheet == "CAULACBO" and "tên câu lạc bộ" in clean_data:
+                            st.info(f"🎯 **{clean_data['tên câu lạc bộ']}** \n\n 🕒 Thời gian: {clean_data.get('thời gian tổ chức', '')} \n\n 🚀 Mục tiêu: {clean_data.get('mục tiêu', '')}")
+                        
+                        else:
+                            # Đối với TONGQUAT hoặc CHUONGTRINHDAOTAO, lấy tiêu đề đầu tiên làm câu trả lời chính
+                            keys = list(clean_data.keys())
+                            if len(keys) >= 2:
+                                st.info(f"📌 **{clean_data[keys[0]]}** \n\n {clean_data[keys[1]]}")
+                            elif len(keys) == 1:
+                                st.info(f"📌 {clean_data[keys[0]]}")
                 else:
-                    st.info("Không tìm thấy dòng khớp chính xác từng từ. Em có thể xem bảng dữ liệu tổng quan dưới đây:")
-                    st.dataframe(df)
+                    st.error("Không tìm thấy thông tin phù hợp. Em hãy thử đổi từ khóa ngắn hơn xem sao nhé (Ví dụ: thay vì gõ cả câu dài, chỉ gõ 'học bổng' hoặc 'ielts').")
                     
             except Exception as e:
                 st.error(f"Hệ thống gặp lỗi nhỏ khi đọc danh mục này: {e}")
