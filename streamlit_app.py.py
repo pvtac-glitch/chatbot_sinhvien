@@ -9,14 +9,15 @@ st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi và 
 
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
-# 1. Ô CHỌN LĨNH VỰC
+# 1. Ô CHỌN LĨNH VỰC (Hiển thị tiếng Việt dễ hiểu cho sinh viên)
 linh_vuc = st.selectbox(
     "👉 Bước 1: Chọn lĩnh vực em muốn hỏi:",
-    ["Học phí", "Học bổng", "Thực tập", "Câu lạc bộ", "Tổng quát", "Chương trình đào tạo"]
+    ["Tổng quát về Khoa", "Chương trình đào tạo", "Học phí", "Học bổng", "Thực tập", "Câu lạc bộ"]
 )
 
+# Ánh xạ chính xác sang tên SHEET viết hoa không dấu trong file Excel của bạn
 sheet_mapping = {
-    "Tổng quát": "TONGQUAT",
+    "Tổng quát về Khoa": "TONGQUAT",
     "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
     "Học phí": "HOCPHI",
     "Học bổng": "HOCBONG",
@@ -62,4 +63,4 @@ if st.button("🚀 Xem câu trả lời"):
                     st.dataframe(df)
                     
             except Exception as e:
-                st.error("Có lỗi xảy ra khi xử lý dữ liệu. Vui lòng thử lại sau!")
+                st.error(f"Có lỗi xảy ra khi xử lý dữ liệu: {e}")
