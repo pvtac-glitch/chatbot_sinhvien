@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 # Cấu hình giao diện gọn gàng cho điện thoại
 st.set_page_config(page_title="Hỗ trợ Sinh viên Khoa Ngoại ngữ", page_icon="🤖", layout="centered")
@@ -10,9 +11,8 @@ st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi. AI 
 
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
-# CẤU HÌNH AI GEMINI (Thay mã API của bạn vào đây)
+# CẤU HÌNH AI GEMINI THẾ HỆ MỚI (Chấp nhận hoàn toàn mã bắt đầu bằng AQ.)
 GEMINI_API_KEY = "AQ.Ab8RN6J9IeeYDOcxFSZqdh1ZS6zVlwngUwYchFCtg2f3qvbhgA"
-genai.configure(api_key=GEMINI_API_KEY)
 
 # 1. BẢNG ÁNH XẠ DANH MỤC
 MENU_OPTIONS = {
@@ -32,11 +32,12 @@ cau_hoi = st.text_input("👉 Bước 2: Nhập câu hỏi của em:", placehold
 if st.button("🚀 Hỏi Trợ Lý AI"):
     if not cau_hoi.strip():
         st.warning("Em vui lòng nhập câu hỏi trước khi bấm nhé!")
-    elif GEMINI_API_KEY == "DÁN_MÃ_API_KEY_CỦA_BẠN_VÀO_ĐÂY":
-        st.error("Thầy/Cô chưa cấu hình mã API Key của Gemini vào dòng số 13 trong code app.py kìa!")
     else:
         with st.spinner("🤖 AI đang đọc toàn bộ file dữ liệu và tổng hợp câu trả lời..."):
             try:
+                # Kích hoạt bộ máy Client bằng thư viện mới
+                client = genai.Client(api_key=GEMINI_API_KEY)
+                
                 # 1. Đọc đúng sheet dữ liệu được chọn
                 selected_sheet = MENU_OPTIONS[lua_chon_tieng_viet]
                 df = pd.read_excel(filepath, sheet_name=selected_sheet, engine="openpyxl")
@@ -45,7 +46,7 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
                 data_context = df.to_string(index=False)
                 
                 # 3. Xây dựng yêu cầu nghiêm ngặt gửi cho AI xử lý (Prompt)
-                prompt = f"""
+                prompt_content = f"""
                 Bạn là một trợ lý ảo thông minh, thân thiện của Khoa Ngoại ngữ. 
                 Nhiệm vụ của bạn là dựa vào BẢNG DỮ LIỆU gốc dưới đây để trả lời câu hỏi của sinh viên một cách chính xác, ngắn gọn, đầy đủ thông tin, không bỏ sót chi tiết quan trọng và không được bịa đặt thông tin nằm ngoài bảng.
                 Nếu câu hỏi yêu cầu đếm số lượng hoặc liệt kê (ví dụ: có bao nhiêu ngành, bao nhiêu CLB), hãy quét toàn bộ bảng dữ liệu để đếm chính xác và liệt kê đầy đủ.
@@ -59,9 +60,11 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
                 Hãy trả lời bằng tiếng Việt, xưng hô là "Thầy/Cô" hoặc "Trợ lý ảo" và gọi sinh viên là "em". Trình bày rõ ràng, sử dụng các dấu gạch đầu dòng cho dễ đọc trên điện thoại.
                 """
                 
-                # 4. Gọi mô hình Gemini xử lý văn bản
-                model = genai.GenerativeModel('gemini-1.5-flash')
-                response = model.generate_content(prompt)
+                # 4. Gọi mô hình thế hệ mới xử lý
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt_content,
+                )
                 
                 # 5. Hiển thị kết quả ra màn hình màu xanh đẹp mắt
                 st.subheader("📝 Câu trả lời từ Trợ lý AI:")
