@@ -3,18 +3,16 @@ import pandas as pd
 import requests
 import json
 
-# Cấu hình giao diện gọn gàng cho điện thoại
 st.set_page_config(page_title="Hỗ trợ Sinh viên Khoa Ngoại ngữ", page_icon="🤖", layout="centered")
 
 st.title("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
-st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi. AI sẽ tự động đọc dữ liệu khoa và tổng hợp câu trả lời chính xác nhất cho em.")
+st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi để AI tổng hợp dữ liệu nhé.")
 
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
-# CẤU HÌNH MÃ AQ. CỦA BẠN
+# GIỮ NGUYÊN MÃ AQ. CỦA BẠN
 GEMINI_API_KEY = "AQ.Ab8RN6J9IeeYDOcxFSZqdh1ZS6zVlwngUwYchFCtg2f3qvbhgA"
 
-# 1. BẢNG ÁNH XẠ DANH MỤC
 MENU_OPTIONS = {
     "Tổng quát về Khoa": "TONGQUAT",
     "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
@@ -24,41 +22,33 @@ MENU_OPTIONS = {
     "Câu lạc bộ": "CAULACBO"
 }
 
-# 2. GIAO DIỆN CHỌN VÀ NHẬP
-lua_chon_tieng_viet = st.selectbox("👉 Bước 1: Chọn lĩnh vực em muốn hỏi:", list(MENU_OPTIONS.keys()))
-cau_hoi = st.text_input("👉 Bước 2: Nhập câu hỏi của em:", placeholder="Ví dụ: Khoa có bao nhiêu ngành đào tạo?")
+lua_chon_tieng_viet = st.selectbox("👉 Chọn lĩnh vực:", list(MENU_OPTIONS.keys()))
+cau_hoi = st.text_input("👉 Nhập câu hỏi:")
 
-# 3. NÚT BẤM VÀ XỬ LÝ
 if st.button("🚀 Hỏi Trợ Lý AI"):
     if not cau_hoi.strip():
-        st.warning("Em vui lòng nhập câu hỏi trước khi bấm nhé!")
+        st.warning("Em vui lòng nhập câu hỏi nhé!")
     else:
-        with st.spinner("🤖 AI đang đọc dữ liệu và tổng hợp câu trả lời..."):
+        with st.spinner("🤖 AI đang tổng hợp câu trả lời..."):
             try:
-                # 1. Đọc đúng sheet dữ liệu được chọn
                 selected_sheet = MENU_OPTIONS[lua_chon_tieng_viet]
                 df = pd.read_excel(filepath, sheet_name=selected_sheet, engine="openpyxl")
-                
-                # 2. Gom toàn bộ bảng dữ liệu thành văn bản
                 data_context = df.to_string(index=False)
                 
-                # 3. Xây dựng yêu cầu gửi cho AI (Prompt)
                 prompt_content = f"""
-                Bạn là một trợ lý ảo thông minh, thân thiện của Khoa Ngoại ngữ. 
-                Nhiệm vụ của bạn là dựa vào BẢNG DỮ LIỆU gốc dưới đây để trả lời câu hỏi của sinh viên một cách chính xác, ngắn gọn, đầy đủ thông tin, không bỏ sót chi tiết quan trọng và không được bịa đặt thông tin nằm ngoài bảng.
+                Bạn là một trợ lý ảo thông minh của Khoa Ngoại ngữ. 
+                Hãy dựa vào BẢNG DỮ LIỆU dưới đây để trả lời câu hỏi của sinh viên một cách chính xác, ngắn gọn, đầy đủ thông tin, không bỏ sót chi tiết.
+                Nếu hỏi số lượng (ví dụ: bao nhiêu ngành), hãy quét toàn bộ để đếm và liệt kê đầy đủ.
 
-                --- BẢNG DỮ LIỆU KHOA CUNG CẤP ---
+                --- BẢNG DỮ LIỆU ---
                 {data_context}
-                ---------------------------------
-
-                👉 CÂU HỎI CỦA SINH VIÊN: "{cau_hoi}"
-
-                Hãy trả lời bằng tiếng Việt, xưng hô là "Thầy/Cô" hoặc "Trợ lý ảo" và gọi sinh viên là "em". Trình bày rõ ràng, sử dụng các dấu gạch đầu dòng cho dễ đọc trên điện thoại.
+                --------------------
+                👉 CÂU HỎI: "{cau_hoi}"
+                Trả lời bằng tiếng Việt, xưng hô Thầy/Cô và gọi sinh viên là em.
                 """
                 
-                # 4. GỬI ĐÚNG GIAO THỨC HTTP ĐỂ KHÔNG BỊ LỖI TOKEN AQ.
-                # Sử dụng đồng thời cả URL Key và Authorization Header để đảm bảo 100% vượt qua bộ lọc Google
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+                # CHUYỂN SANG ĐƯỜNG TRUYỀN HỖ TRỢ ĐẦU MÃ AQ. (V1 BETA OAUTH)
+                url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
                 
                 headers = {
                     "Authorization": f"Bearer {GEMINI_API_KEY}",
@@ -71,18 +61,15 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
                     }]
                 }
                 
-                # Gọi API trực tiếp
                 response = requests.post(url, headers=headers, json=payload)
                 result_json = response.json()
                 
-                # 5. Kiểm tra kết quả trả về
                 if response.status_code == 200:
                     answer = result_json['candidates'][0]['content']['parts'][0]['text']
                     st.subheader("📝 Câu trả lời từ Trợ lý AI:")
                     st.info(answer)
                 else:
-                    # In ra lỗi chi tiết nếu Google từ chối
-                    st.error(f"Google từ chối xử lý (Mã lỗi {response.status_code}): {result_json.get('error', {}).get('message', 'Không rõ nguyên nhân')}")
+                    st.error(f"Lỗi hệ thống ({response.status_code}): {result_json.get('error', {}).get('message', 'Vui lòng kiểm tra lại loại Key')}")
                     
             except Exception as e:
-                st.error(f"Hệ thống gặp lỗi kết nối: {e}")
+                st.error(f"Lỗi kết nối: {e}")
