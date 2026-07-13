@@ -1,10 +1,3 @@
-import os
-# Tự động cài đặt openpyxl ngay khi ứng dụng vừa khởi động
-os.system("pip install openpyxl")
-
-import streamlit as st
-import pandas as pd
-# ... (giữ nguyên toàn bộ đoạn code xử lý bên dưới của bạn)
 import streamlit as st
 import pandas as pd
 
@@ -16,7 +9,7 @@ st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi và 
 
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
-# 1. KHAI BÁO BẢNG ÁNH XẠ CHÍNH XÁC (Định nghĩa MENU_OPTIONS)
+# 1. KHAI BÁO BẢNG ÁNH XẠ CHÍNH XÁC
 MENU_OPTIONS = {
     "Tổng quát về Khoa": "TONGQUAT",
     "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
@@ -42,11 +35,10 @@ if st.button("🚀 Xem câu trả lời"):
     else:
         with st.spinner("Đang lục tìm dữ liệu..."):
             try:
-                # Đọc tên sheet từ bảng ánh xạ đã khai báo ở trên
                 selected_sheet = MENU_OPTIONS[lua_chon_tieng_viet]
                 
-                # Đọc dữ liệu từ file Excel
-                df = pd.read_excel(filepath, sheet_name=selected_sheet)
+                # Ép kiểu engine="openpyxl" để đọc file xlsx chuẩn xác
+                df = pd.read_excel(filepath, sheet_name=selected_sheet, engine="openpyxl")
                 
                 # Tìm kiếm thông tin dựa trên từ khóa sinh viên gõ
                 keywords = [kw.lower() for kw in cau_hoi.split() if len(kw) > 1]
@@ -61,7 +53,6 @@ if st.button("🚀 Xem câu trả lời"):
                 if results:
                     st.success(f"Tìm thấy {len(results)} thông tin liên quan đến câu hỏi của em:")
                     for res in results:
-                        # Hiển thị thông tin dạng thẻ dễ đọc trên điện thoại
                         with st.container():
                             res_dict = res.dropna().to_dict()
                             for k, v in res_dict.items():
