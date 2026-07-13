@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-from openai import OpenAI
+import requests
+import json
 
 # Cấu hình giao diện gọn gàng cho điện thoại
 st.set_page_config(page_title="Hỗ trợ Sinh viên Khoa Ngoại ngữ", page_icon="🤖", layout="centered")
@@ -10,8 +11,8 @@ st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi. AI 
 
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
-# CẤU HÌNH API AI (Sử dụng API Key dạng sk-... để tránh hoàn toàn lỗi 401 của Google)
-AI_API_KEY = "ĐIỀN_MÃ_API_KEY_CỦA_BẠN"
+# GIỮ NGUYÊN MÃ KHÓA AQ CHẠY ỔN ĐỊNH CỦA BẠN
+GEMINI_API_KEY = "AQ.Ab8RN6J9IeeYDOcxFSZqdh1ZS6zVlwngUwYchFCtg2f3qvbhgA"
 
 # 1. BẢNG ÁNH XẠ DANH MỤC
 MENU_OPTIONS = {
@@ -31,23 +32,20 @@ cau_hoi = st.text_input("👉 Bước 2: Nhập câu hỏi của em:", placehold
 if st.button("🚀 Hỏi Trợ Lý AI"):
     if not cau_hoi.strip():
         st.warning("Em vui lòng nhập câu hỏi trước khi bấm nhé!")
-    elif AI_API_KEY == "AQ.Ab8RN6LhkpZ9CSho4ukq-Xunz8wghk4x_HvPzMNE2AgOZZm2kw":
-        st.error("Thầy/Cô chưa điền mã API Key mới vào dòng số 14 kìa!")
     else:
-        with st.spinner("🤖 AI đang đọc toàn bộ file dữ liệu và tổng hợp câu trả lời..."):
+        with st.spinner("🤖 AI đang đọc dữ liệu và tổng hợp câu trả lời..."):
             try:
                 # 1. Đọc đúng sheet dữ liệu được chọn
                 selected_sheet = MENU_OPTIONS[lua_chon_tieng_viet]
                 df = pd.read_excel(filepath, sheet_name=selected_sheet, engine="openpyxl")
                 
-                # 2. Gom toàn bộ bảng dữ liệu thành một chuỗi văn bản cho AI đọc
+                # 2. Gom toàn bộ bảng dữ liệu thành văn bản
                 data_context = df.to_string(index=False)
                 
-                # 3. Xây dựng yêu cầu nghiêm ngặt gửi cho AI xử lý (Prompt)
+                # 3. Xây dựng yêu cầu gửi cho AI (Prompt)
                 prompt_content = f"""
                 Bạn là một trợ lý ảo thông minh, thân thiện của Khoa Ngoại ngữ. 
                 Nhiệm vụ của bạn là dựa vào BẢNG DỮ LIỆU gốc dưới đây để trả lời câu hỏi của sinh viên một cách chính xác, ngắn gọn, đầy đủ thông tin, không bỏ sót chi tiết quan trọng và không được bịa đặt thông tin nằm ngoài bảng.
-                Nếu câu hỏi yêu cầu đếm số lượng hoặc liệt kê (ví dụ: có bao nhiêu ngành, bao nhiêu CLB), hãy quét toàn bộ bảng dữ liệu để đếm chính xác và liệt kê đầy đủ.
 
                 --- BẢNG DỮ LIỆU KHOA CUNG CẤP ---
                 {data_context}
@@ -58,22 +56,34 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
                 Hãy trả lời bằng tiếng Việt, xưng hô là "Thầy/Cô" hoặc "Trợ lý ảo" và gọi sinh viên là "em". Trình bày rõ ràng, sử dụng các dấu gạch đầu dòng cho dễ đọc trên điện thoại.
                 """
                 
-                # 4. Gọi mô hình Qwen thông qua chuẩn OpenAI Client
-                client = OpenAI(
-                    api_key=AI_API_KEY,
-                    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1" # Đường truyền kết nối Qwen
-                )
+                # 4. GỬI ĐÚNG GIAO THỨC HTTP
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
                 
-                completion = client.chat.completions.create(
-                    model="qwen-plus", # Mô hình đọc hiểu văn bản và bảng biểu cực mạnh
-                    messages=[
-                        {"role": "user", "content": prompt_content}
-                    ]
-                )
+                headers = {
+                    "Authorization": f"Bearer {GEMINI_API_KEY}",
+                    "Content-Type": "application/json"
+                }
                 
-                # 5. Hiển thị kết quả ra màn hình màu xanh đẹp mắt
-                st.subheader("📝 Câu trả lời từ Trợ lý AI:")
-                st.info(completion.choices[0].message.content)
+                payload = {
+                    "contents": [{
+                        "parts": [{"text": prompt_content}]
+                    }]
+                }
+                
+                # SỬA LỖI TẠI ĐÂY: Ép dữ liệu phải đóng gói dưới dạng UTF-8 để nhận diện tiếng Việt có dấu
+                data_payload = json.dumps(payload, ensure_ascii=False).encode('utf-8')
+                
+                # Thực hiện gọi API gửi đi dữ liệu đã chuẩn hóa font chữ
+                response = requests.post(url, headers=headers, data=data_payload)
+                result_json = response.json()
+                
+                # 5. Kiểm tra kết quả trả về
+                if response.status_code == 200:
+                    answer = result_json['candidates'][0]['content']['parts'][0]['text']
+                    st.subheader("📝 Câu trả lời từ Trợ lý AI:")
+                    st.info(answer)
+                else:
+                    st.error(f"Google từ chối xử lý (Mã lỗi {response.status_code}): {result_json.get('error', {}).get('message', 'Không rõ nguyên nhân')}")
                     
             except Exception as e:
-                st.error(f"Hệ thống gặp lỗi khi kết nối với bộ não AI: {e}")
+                st.error(f"Hệ thống gặp lỗi kết nối: {e}")
