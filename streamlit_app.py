@@ -11,7 +11,7 @@ st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi. AI 
 
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
-# GIỮ NGUYÊN MÃ KHÓA AQ CHẠY ỔN ĐỊNH CỦA BẠN
+# GIỮ NGUYÊN MÃ KHÓA ĐẦU AQ. CỦA BẠN
 GEMINI_API_KEY = "AQ.Ab8RN6J9IeeYDOcxFSZqdh1ZS6zVlwngUwYchFCtg2f3qvbhgA"
 
 # 1. BẢNG ÁNH XẠ DANH MỤC
@@ -46,6 +46,7 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
                 prompt_content = f"""
                 Bạn là một trợ lý ảo thông minh, thân thiện của Khoa Ngoại ngữ. 
                 Nhiệm vụ của bạn là dựa vào BẢNG DỮ LIỆU gốc dưới đây để trả lời câu hỏi của sinh viên một cách chính xác, ngắn gọn, đầy đủ thông tin, không bỏ sót chi tiết quan trọng và không được bịa đặt thông tin nằm ngoài bảng.
+                Nếu câu hỏi yêu cầu đếm số lượng hoặc liệt kê, hãy quét toàn bộ bảng dữ liệu để đếm chính xác và liệt kê đầy đủ.
 
                 --- BẢNG DỮ LIỆU KHOA CUNG CẤP ---
                 {data_context}
@@ -56,12 +57,13 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
                 Hãy trả lời bằng tiếng Việt, xưng hô là "Thầy/Cô" hoặc "Trợ lý ảo" và gọi sinh viên là "em". Trình bày rõ ràng, sử dụng các dấu gạch đầu dòng cho dễ đọc trên điện thoại.
                 """
                 
-                # 4. GỬI ĐÚNG GIAO THỨC HTTP
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
+                # 🔥 SỬA TẠI ĐÂY: Xóa bỏ hoàn toàn "?key=" khỏi URL để tránh kích hoạt bộ quét lỗi 401 của Google
+                url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
                 
+                # Đưa mã AQ. vào làm mã xác thực Bearer Token chính thức
                 headers = {
                     "Authorization": f"Bearer {GEMINI_API_KEY}",
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json; charset=utf-8"
                 }
                 
                 payload = {
@@ -70,10 +72,10 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
                     }]
                 }
                 
-                # SỬA LỖI TẠI ĐÂY: Ép dữ liệu phải đóng gói dưới dạng UTF-8 để nhận diện tiếng Việt có dấu
+                # Đóng gói dữ liệu dạng UTF-8 để không bị lỗi font chữ tiếng Việt (ASCII)
                 data_payload = json.dumps(payload, ensure_ascii=False).encode('utf-8')
                 
-                # Thực hiện gọi API gửi đi dữ liệu đã chuẩn hóa font chữ
+                # Thực hiện gọi API
                 response = requests.post(url, headers=headers, data=data_payload)
                 result_json = response.json()
                 
