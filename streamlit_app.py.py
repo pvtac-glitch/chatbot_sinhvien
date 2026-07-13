@@ -9,14 +9,9 @@ st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi và 
 
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
-# 1. Ô CHỌN LĨNH VỰC (Hiển thị tiếng Việt dễ hiểu cho sinh viên)
-linh_vuc = st.selectbox(
-    "👉 Bước 1: Chọn lĩnh vực em muốn hỏi:",
-    ["Tổng quát về Khoa", "Chương trình đào tạo", "Học phí", "Học bổng", "Thực tập", "Câu lạc bộ"]
-)
-
-# Ánh xạ chính xác sang tên SHEET viết hoa không dấu trong file Excel của bạn
-sheet_mapping = {
+# 1. BẢNG ÁNH XẠ (Đưa lên đầu để quản lý chặt chẽ)
+# Tên hiển thị giao diện : Tên Sheet CHÍNH XÁC trong file Excel của bạn
+MENU_OPTIONS = {
     "Tổng quát về Khoa": "TONGQUAT",
     "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
     "Học phí": "HOCPHI",
@@ -25,17 +20,26 @@ sheet_mapping = {
     "Câu lạc bộ": "CAULACBO"
 }
 
-# 2. Ô NHẬP CÂU HỎI
+# 2. Ô CHỌN LĨNH VỰC (Lấy danh sách phím từ bảng ánh xạ)
+lua_chon_tieng_viet = st.selectbox(
+    "👉 Bước 1: Chọn lĩnh vực em muốn hỏi:",
+    list(MENU_OPTIONS.keys())
+)
+
+# 3. Ô NHẬP CÂU HỎI
 cau_hoi = st.text_input("👉 Bước 2: Nhập từ khóa hoặc câu hỏi của em:", placeholder="Ví dụ: sư phạm tiếng anh, học bổng, ielts...")
 
-# 3. NÚT BẤM XỬ LÝ
+# 4. NÚT BẤM XỬ LÝ
 if st.button("🚀 Xem câu trả lời"):
     if not cau_hoi.strip():
         st.warning("Em vui lòng nhập câu hỏi trước khi bấm tìm kiếm nhé!")
     else:
         with st.spinner("Đang lục tìm dữ liệu..."):
             try:
-                selected_sheet = sheet_mapping[linh_vuc]
+                # Lấy tên sheet chuẩn viết hoa không dấu từ bảng ánh xạ
+                selected_sheet = MENU_OPTIONS[lua_chon_tieng_viet]
+                
+                # Đọc dữ liệu từ file Excel
                 df = pd.read_excel(filepath, sheet_name=selected_sheet)
                 
                 # Tìm kiếm thông tin dựa trên từ khóa sinh viên gõ
@@ -59,8 +63,8 @@ if st.button("🚀 Xem câu trả lời"):
                                     st.write(f"**{k}:** {v}")
                             st.markdown("---")
                 else:
-                    st.info("Không tìm thấy dòng khớp chính xác. Em có thể tham khảo bảng dữ liệu tổng quan dưới đây:")
+                    st.info("Không tìm thấy dòng khớp chính xác từng từ. Em có thể xem bảng dữ liệu tổng quan dưới đây:")
                     st.dataframe(df)
                     
             except Exception as e:
-                st.error(f"Có lỗi xảy ra khi xử lý dữ liệu: {e}")
+                st.error(f"Hệ thống gặp lỗi nhỏ khi đọc danh mục này. Thầy/Cô vui lòng kiểm tra lại tên Sheet trong file Excel nhé! (Chi tiết: {e})")         
