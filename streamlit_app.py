@@ -42,11 +42,10 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
                 # 2. Gom toàn bộ bảng dữ liệu thành văn bản
                 data_context = df.to_string(index=False)
                 
-                # 3. Xây dựng yêu cầu gửi cho AI (Prompt)
+                # 3. XÂY DỰNG PROMPT: Ép AI chắt lọc thông tin nghiêm ngặt, ngắn gọn
                 prompt_content = f"""
                 Bạn là một trợ lý ảo thông minh, thân thiện của Khoa Ngoại ngữ. 
-                Nhiệm vụ của bạn là dựa vào BẢNG DỮ LIỆU gốc dưới đây để trả lời câu hỏi của sinh viên một cách chính xác, ngắn gọn, đầy đủ thông tin, không bỏ sót chi tiết quan trọng và không được bịa đặt thông tin nằm ngoài bảng.
-                Nếu câu hỏi yêu cầu đếm số lượng hoặc liệt kê, hãy quét toàn bộ bảng dữ liệu để đếm chính xác và liệt kê đầy đủ.
+                Nhiệm vụ của bạn là dựa vào BẢNG DỮ LIỆU gốc dưới đây để trả lời câu hỏi của sinh viên.
 
                 --- BẢNG DỮ LIỆU KHOA CUNG CẤP ---
                 {data_context}
@@ -54,15 +53,18 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
 
                 👉 CÂU HỎI CỦA SINH VIÊN: "{cau_hoi}"
 
-                Hãy trả lời bằng tiếng Việt, xưng hô là "Thầy/Cô" hoặc "Trợ lý ảo" và gọi sinh viên là "em". Trình bày rõ ràng, sử dụng các dấu gạch đầu dòng cho dễ đọc trên điện thoại.
+                QUY TẮC TRẢ LỜI NGHIÊM NGẶT:
+                1. Chỉ lọc ra thông tin ĐÚNG TRỌNG TÂM câu hỏi. Tuyệt đối không bê nguyên xi toàn bộ bảng hoặc các thông tin không liên quan vào câu trả lời.
+                2. Câu trả lời phải CỰC KỲ NGẮN GỌN, súc tích (Tối ưu nhất là trong vòng 2 - 4 câu văn).
+                3. Hãy trả lời bằng tiếng Việt, xưng hô là "Thầy/Cô" hoặc "Trợ lý ảo" và gọi sinh viên là "em". Trình bày tự nhiên, dễ đọc trên giao diện điện thoại.
+                4. Nếu trong bảng dữ liệu không có thông tin để trả lời câu hỏi, hãy lịch sự phản hồi là không tìm thấy dữ liệu và hướng dẫn em liên hệ văn phòng Khoa.
                 """
                 
-                # 🔥 SỬA TẠI ĐÂY: Xóa bỏ hoàn toàn "?key=" khỏi URL để tránh kích hoạt bộ quét lỗi 401 của Google
-                url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+                # 🔥 SỬA CHÍNH XÁC: Google REST API bắt buộc truyền key qua tham số URL "?key=" chứ không dùng Bearer token cho API key cá nhân.
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY}"
                 
-                # Đưa mã AQ. vào làm mã xác thực Bearer Token chính thức
+                # Loại bỏ Authorization Bearer để tránh xung đột với param URL
                 headers = {
-                    "Authorization": f"Bearer {GEMINI_API_KEY}",
                     "Content-Type": "application/json; charset=utf-8"
                 }
                 
@@ -72,7 +74,7 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
                     }]
                 }
                 
-                # Đóng gói dữ liệu dạng UTF-8 để không bị lỗi font chữ tiếng Việt (ASCII)
+                # Đóng gói dữ liệu dạng UTF-8
                 data_payload = json.dumps(payload, ensure_ascii=False).encode('utf-8')
                 
                 # Thực hiện gọi API
