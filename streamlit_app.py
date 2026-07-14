@@ -28,7 +28,7 @@ filepath = "DULIEUKHOANGOAINGU.xlsx"
 # =========================
 
 # Tạm thời dùng trực tiếp
-GEMINI_API_KEY = "AQ.Ab8RN6J9IeeYDOcxFSZqdh1ZS6zVlwngUwYchFCtg2f3qvbhgA"
+GEMINI_API_KEY = "AQ.Ab8RN6KSw5vUKmgMBxKdicCJTrG9hlL2SAcnRSdAjTS2ddZ_Bw"
 
 # Sau này nên dùng:
 # GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
