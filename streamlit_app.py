@@ -12,7 +12,7 @@ st.write("Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi. AI 
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
 # GIỮ NGUYÊN MÃ KHÓA ĐẦU AQ. CỦA BẠN
-GEMINI_API_KEY = "AQ.Ab8RN6J9IeeYDOcxFSZqdh1ZS6zVlwngUwYchFCtg2f3qvbhgA"
+GEMINI_API_KEY = "AQ.Ab8RN6LZprANU5uLT-cFkp3dfkHYFnYvBe_AdRQupPso4M3g5g"
 
 # 1. BẢNG ÁNH XẠ DANH MỤC
 MENU_OPTIONS = {
