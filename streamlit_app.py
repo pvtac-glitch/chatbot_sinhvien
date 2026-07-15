@@ -1,7 +1,12 @@
 import streamlit as st
 import google.generativeai as genai
 import pandas as pd
-
+st.set_page_config(
+    page_title="Trợ lý AI Khoa Ngoại ngữ",
+    page_icon="🤖",
+    layout="centered", # Giúp giao diện co giãn vừa vặn màn hình dọc điện thoại
+    initial_sidebar_state="collapsed" # Ẩn thanh menu thừa bên cạnh nếu có
+)
 # ==========================================
 # 1. CẤU HÌNH API KEY (Lấy từ Streamlit Secrets)
 # ==========================================
