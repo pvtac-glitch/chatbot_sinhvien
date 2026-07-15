@@ -1,67 +1,23 @@
 import streamlit as st
 import google.generativeai as genai
 import pandas as pd
-st.set_page_config(
-    page_title="Trợ lý AI Khoa Ngoại ngữ",
-    page_icon="🤖",
-    layout="centered", # Giúp giao diện co giãn vừa vặn màn hình dọc điện thoại
-    initial_sidebar_state="collapsed" # Ẩn thanh menu thừa bên cạnh nếu có
-)
-# ==========================================
-# 1. CẤU HÌNH API KEY (Lấy từ Streamlit Secrets)
-# ==========================================
-try:
-    # Đảm bảo bạn đã điền API Key dạng AIzaSy... vào file .streamlit/secrets.toml
-    # Cấu trúc file secrets.toml: GEMINI_API_KEY = "AIzaSy..."
-    api_key = st.secrets["GEMINI_API_KEY"]
-    genai.configure(api_key=api_key)
-except KeyError:
-    st.error("Chưa cấu hình GEMINI_API_KEY trong Streamlit Secrets!")
-    st.stop()
+import time  # Thêm thư viện thời gian
+
+# ... (Giữ nguyên phần config API và đọc file ở trên) ...
 
 # ==========================================
-# 2. ĐỊNH NGHĨA DANH MỤC SHEET
+# KHỞI TẠO BỘ NHỚ ĐỆM (CACHE) & COOLDOWN TRONG SESSION
 # ==========================================
-filepath = "DULIEUKHOANGOAINGU.xlsx"
+if "last_ask_time" not in st.session_state:
+    st.session_state["last_ask_time"] = 0.0
 
-MENU_OPTIONS = {
-    "Tổng quát về Khoa": "TONGQUAT",
-    "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
-    "Học phí": "HOCPHI",
-    "Học bổng": "HOCBONG",
-    "Thực tập": "THUCTAP",
-    "Câu lạc bộ": "CAULACBO"
-}
-
-# Hàm tối ưu hóa việc đọc dữ liệu theo từng sheet và lưu vào cache
-@st.cache_data
-def load_data_by_sheet(file_path, sheet_name):
-    return pd.read_excel(file_path, sheet_name=sheet_name, engine="openpyxl")
+if "qa_cache" not in st.session_state:
+    # Lưu các câu hỏi đã có câu trả lời để tránh gọi API trùng lặp
+    st.session_state["qa_cache"] = {} 
 
 
 # ==========================================
-# 3. GIAO DIỆN ỨNG DỤNG (UI)
-# ==========================================
-st.title("Chatbot Hỗ Trợ Sinh Viên 🎓")
-st.subheader("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
-
-st.write(
-    "Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi. "
-    "AI sẽ tự động đọc dữ liệu khoa và tổng hợp câu trả lời chính xác nhất cho em."
-)
-
-lua_chon_tieng_viet = st.selectbox(
-    "👉 Bước 1: Chọn lĩnh vực em muốn hỏi:",
-    list(MENU_OPTIONS.keys())
-)
-
-cau_hoi = st.text_input(
-    "👉 Bước 2: Nhập câu hỏi của em:",
-    placeholder="Ví dụ: Khoa có bao nhiêu ngành đào tạo?"
-)
-
-# ==========================================
-# 4. XỬ LÝ KHI BẤM NÚT HỎI AI
+# XỬ LÝ KHI BẤM NÚT HỎI AI (ĐÃ TỐI ƯU)
 # ==========================================
 if st.button("🚀 Hỏi Trợ Lý AI"):
 
@@ -69,16 +25,40 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
         st.warning("Em vui lòng nhập câu hỏi trước nhé!")
         st.stop()
 
+    # --- 1. KIỂM TRA COOLDOWN (CHỐNG SPAM) ---
+    current_time = time.time()
+    time_passed = current_time - st.session_state["last_ask_time"]
+    cooldown_limit = 10  # Số giây sinh viên phải đợi giữa 2 câu hỏi
+
+    if time_passed < cooldown_limit:
+        remaining = int(cooldown_limit - time_passed)
+        st.warning(f"⚡ Em hỏi nhanh quá! Vui lòng đợi {remaining} giây nữa để hệ thống xử lý nhé.")
+        st.stop()
+
+    # Cập nhật lại thời gian hỏi mới nhất
+    st.session_state["last_ask_time"] = current_time
+
+    # --- 2. KIỂM TRA TRÙNG CÂU HỎI (TIẾT KIỆM QUOTA) ---
+    standardized_question = cau_hoi.strip().lower()
+    
+    # Tạo một "khóa" gồm lĩnh vực + câu hỏi để kiểm tra trong bộ nhớ đệm
+    cache_key = f"{lua_chon_tieng_viet}_{standardized_question}"
+
+    if cache_key in st.session_state["qa_cache"]:
+        # Nếu đã có trong cache, hiển thị ngay lập tức, tốn 0đ và 0ms gọi API
+        cached_answer = st.session_state["qa_cache"][cache_key]
+        st.subheader("📝 Câu trả lời từ Trợ lý AI (Tối ưu từ hệ thống)")
+        st.success(cached_answer)
+        st.info("💡 Câu trả lời này được lấy từ bộ nhớ đệm để tăng tốc độ phản hồi.")
+        st.stop()
+
+    # --- 3. GỌI GEMINI API NẾU LÀ CÂU HỎI MỚI ---
     with st.spinner("🤖 AI đang đọc dữ liệu và xử lý..."):
         try:
-            # Lấy tên sheet tương ứng từ lựa chọn
             selected_sheet = MENU_OPTIONS[lua_chon_tieng_viet]
-            
-            # Đọc dữ liệu từ cache (tối ưu hiệu năng)
             df = load_data_by_sheet(filepath, selected_sheet)
             data_context = df.to_string(index=False)
 
-            # Cấu hình Prompt cho AI
             prompt_content = f"""
 Bạn là Trợ lý AI của Khoa Ngoại ngữ.
 Chỉ được phép trả lời dựa trên dữ liệu được cung cấp dưới đây.
@@ -99,20 +79,30 @@ Yêu cầu câu trả lời:
 - Nếu có danh sách thông tin, bắt buộc dùng gạch đầu dòng.
 """
 
-            # Gọi Gemini API thông qua thư viện chính thức thay vì requests
-            # Sử dụng model gemini-2.5-flash tối tân và tiết kiệm phí
             model = genai.GenerativeModel("gemini-2.5-flash")
             response = model.generate_content(prompt_content)
 
-            # Hiển thị kết quả ra giao diện
             if response.text:
+                answer = response.text
+                
+                # Lưu câu trả lời mới vào cache để lần sau dùng lại
+                st.session_state["qa_cache"][cache_key] = answer
+
                 st.subheader("📝 Câu trả lời từ Trợ lý AI")
-                st.success(response.text)
+                st.success(answer)
             else:
                 st.error("Không nhận được phản hồi từ AI. Vui lòng thử lại!")
 
         except FileNotFoundError:
-            st.error(f"Không tìm thấy file dữ liệu: {filepath}. Vui lòng kiểm tra lại đường dẫn file trên GitHub.")
+            st.error(f"Không tìm thấy file dữ liệu: {filepath}.")
         except Exception as e:
-            # Bắt các lỗi phân tích cú pháp hoặc lỗi hệ thống khác
-            st.error(f"Hệ thống gặp lỗi: {str(e)}")
+            # Xử lý thông minh khi gặp lỗi quá hạn mức (Error 429) hoặc lỗi khác
+            err_str = str(e)
+            if "429" in err_str or "ResourceExhausted" in err_str:
+                st.error(
+                    "⚠️ Hệ thống Trợ lý AI đang có số lượng truy cập quá tải. "
+                    "Để nhận thông tin ngay lập tức, em vui lòng liên hệ trực tiếp Văn phòng Khoa "
+                    "hoặc thử lại sau 1-2 phút nhé!"
+                )
+            else:
+                st.error(f"Hệ thống gặp lỗi: {err_str}")
