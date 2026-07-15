@@ -1,15 +1,25 @@
 import streamlit as st
+import google.generativeai as genai
 import pandas as pd
-import requests
 
-# =========================
-# CẤU HÌNH GIAO DIỆN
-# =========================
-st.set_page_config(
-    page_title="Hỗ trợ Sinh viên Khoa Ngoại ngữ",
-    page_icon="🤖",
-    layout="centered"
-)
+# 1. Đọc API Key an toàn từ Streamlit Secrets
+try:
+    api_key = st.secrets["GEMINI_API_KEY"]
+    genai.configure(api_key=api_key)
+except KeyError:
+    st.error("Chưa cấu hình GEMINI_API_KEY trong Streamlit Secrets!")
+    st.stop()
+
+# 2. Đọc file dữ liệu Excel của sinh viên (đã tải lên GitHub)
+@st.cache_data
+def load_data():
+    # Giả sử file Excel nằm cùng thư mục trên GitHub
+    return pd.read_excel("ten_file_du_lieu.xlsx")
+
+df = load_data()
+
+# --- Phần xử lý Chatbot của anh tiếp tục ở đây ---
+st.title("Chatbot Hỗ Trợ Sinh Viên 🎓")
 
 st.title("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
 
