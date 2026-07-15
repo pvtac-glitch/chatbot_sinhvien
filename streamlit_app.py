@@ -14,7 +14,7 @@ except KeyError:
 @st.cache_data
 def load_data():
     # Giả sử file Excel nằm cùng thư mục trên GitHub
-    return pd.read_excel("ten_file_du_lieu.xlsx")
+    return pd.read_excel("DULIEUKHOANGOAINGU.xlsx")
 
 df = load_data()
 
