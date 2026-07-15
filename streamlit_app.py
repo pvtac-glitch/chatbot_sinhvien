@@ -1,52 +1,24 @@
-import requests
 import streamlit as st
 import google.generativeai as genai
 import pandas as pd
 
-# 1. Đọc API Key an toàn từ Streamlit Secrets
+# ==========================================
+# 1. CẤU HÌNH API KEY (Lấy từ Streamlit Secrets)
+# ==========================================
 try:
+    # Đảm bảo bạn đã điền API Key dạng AIzaSy... vào file .streamlit/secrets.toml
+    # Cấu trúc file secrets.toml: GEMINI_API_KEY = "AIzaSy..."
     api_key = st.secrets["GEMINI_API_KEY"]
     genai.configure(api_key=api_key)
 except KeyError:
     st.error("Chưa cấu hình GEMINI_API_KEY trong Streamlit Secrets!")
     st.stop()
 
-# 2. Đọc file dữ liệu Excel của sinh viên (đã tải lên GitHub)
-@st.cache_data
-def load_data():
-    # Giả sử file Excel nằm cùng thư mục trên GitHub
-    return pd.read_excel("DULIEUKHOANGOAINGU.xlsx")
-
-df = load_data()
-
-# --- Phần xử lý Chatbot của anh tiếp tục ở đây ---
-st.title("Chatbot Hỗ Trợ Sinh Viên 🎓")
-
-st.title("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
-
-st.write(
-    "Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi. "
-    "AI sẽ tự động đọc dữ liệu khoa và tổng hợp câu trả lời chính xác nhất cho em."
-)
-
-# =========================
-# FILE DỮ LIỆU
-# =========================
+# ==========================================
+# 2. ĐỊNH NGHĨA DANH MỤC SHEET
+# ==========================================
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
-# =========================
-# API KEY GEMINI
-# =========================
-
-# Tạm thời dùng trực tiếp
-GEMINI_API_KEY = "AQ.Ab8RN6KSw5vUKmgMBxKdicCJTrG9hlL2SAcnRSdAjTS2ddZ_Bw"
-
-# Sau này nên dùng:
-# GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
-
-# =========================
-# DANH MỤC
-# =========================
 MENU_OPTIONS = {
     "Tổng quát về Khoa": "TONGQUAT",
     "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
@@ -56,9 +28,22 @@ MENU_OPTIONS = {
     "Câu lạc bộ": "CAULACBO"
 }
 
-# =========================
-# GIAO DIỆN NHẬP DỮ LIỆU
-# =========================
+# Hàm tối ưu hóa việc đọc dữ liệu theo từng sheet và lưu vào cache
+@st.cache_data
+def load_data_by_sheet(file_path, sheet_name):
+    return pd.read_excel(file_path, sheet_name=sheet_name, engine="openpyxl")
+
+
+# ==========================================
+# 3. GIAO DIỆN ỨNG DỤNG (UI)
+# ==========================================
+st.title("Chatbot Hỗ Trợ Sinh Viên 🎓")
+st.subheader("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
+
+st.write(
+    "Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi. "
+    "AI sẽ tự động đọc dữ liệu khoa và tổng hợp câu trả lời chính xác nhất cho em."
+)
 
 lua_chon_tieng_viet = st.selectbox(
     "👉 Bước 1: Chọn lĩnh vực em muốn hỏi:",
@@ -70,125 +55,59 @@ cau_hoi = st.text_input(
     placeholder="Ví dụ: Khoa có bao nhiêu ngành đào tạo?"
 )
 
-# =========================
-# NÚT HỎI AI
-# =========================
-
+# ==========================================
+# 4. XỬ LÝ KHI BẤM NÚT HỎI AI
+# ==========================================
 if st.button("🚀 Hỏi Trợ Lý AI"):
 
     if not cau_hoi.strip():
         st.warning("Em vui lòng nhập câu hỏi trước nhé!")
         st.stop()
 
-    with st.spinner("🤖 AI đang đọc dữ liệu..."):
-
+    with st.spinner("🤖 AI đang đọc dữ liệu và xử lý..."):
         try:
-
-            # -------------------------
-            # ĐỌC SHEET ĐƯỢC CHỌN
-            # -------------------------
+            # Lấy tên sheet tương ứng từ lựa chọn
             selected_sheet = MENU_OPTIONS[lua_chon_tieng_viet]
-
-            df = pd.read_excel(
-                filepath,
-                sheet_name=selected_sheet,
-                engine="openpyxl"
-            )
-
+            
+            # Đọc dữ liệu từ cache (tối ưu hiệu năng)
+            df = load_data_by_sheet(filepath, selected_sheet)
             data_context = df.to_string(index=False)
 
-            # -------------------------
-            # PROMPT
-            # -------------------------
+            # Cấu hình Prompt cho AI
             prompt_content = f"""
 Bạn là Trợ lý AI của Khoa Ngoại ngữ.
-
-Chỉ được phép trả lời dựa trên dữ liệu được cung cấp.
-
-Không được bịa đặt thông tin.
-
-Nếu không tìm thấy câu trả lời trong dữ liệu thì trả lời:
-
+Chỉ được phép trả lời dựa trên dữ liệu được cung cấp dưới đây.
+Không được tự bịa đặt thông tin nằm ngoài dữ liệu.
+Nếu không tìm thấy câu trả lời trong dữ liệu thì hãy trả lời chính xác câu sau:
 "Xin lỗi em, hiện tại Thầy/Cô chưa tìm thấy thông tin này trong cơ sở dữ liệu của Khoa. Em vui lòng liên hệ Văn phòng Khoa để được hỗ trợ thêm."
 
-DỮ LIỆU:
-
+DỮ LIỆU KHOA CUNG CẤP:
 {data_context}
 
-CÂU HỎI:
-
+CÂU HỎI CỦA SINH VIÊN:
 {cau_hoi}
 
-Yêu cầu:
-- Trả lời bằng tiếng Việt.
-- Xưng hô lịch sự.
-- Ngắn gọn.
-- Dễ đọc trên điện thoại.
-- Nếu có danh sách thì dùng gạch đầu dòng.
+Yêu cầu câu trả lời:
+- Trả lời hoàn toàn bằng tiếng Việt.
+- Xưng hô lịch sự (Thầy/Cô - Em).
+- Ngắn gọn, rõ ràng, dễ đọc trên điện thoại.
+- Nếu có danh sách thông tin, bắt buộc dùng gạch đầu dòng.
 """
 
-            # -------------------------
-            # GỌI GEMINI API
-            # -------------------------
-            url = (
-                "https://generativelanguage.googleapis.com/v1beta/"
-                f"models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
-            )
+            # Gọi Gemini API thông qua thư viện chính thức thay vì requests
+            # Sử dụng model gemini-2.5-flash tối tân và tiết kiệm phí
+            model = genai.GenerativeModel("gemini-2.5-flash")
+            response = model.generate_content(prompt_content)
 
-            payload = {
-                "contents": [
-                    {
-                        "parts": [
-                            {
-                                "text": prompt_content
-                            }
-                        ]
-                    }
-                ]
-            }
-
-            headers = {
-                "Content-Type": "application/json"
-            }
-
-            response = requests.post(
-                url,
-                headers=headers,
-                json=payload,
-                timeout=60
-            )
-
-            # -------------------------
-            # KIỂM TRA KẾT QUẢ
-            # -------------------------
-            if response.status_code == 200:
-
-                result = response.json()
-
-                answer = (
-                    result["candidates"][0]
-                    ["content"]["parts"][0]
-                    ["text"]
-                )
-
+            # Hiển thị kết quả ra giao diện
+            if response.text:
                 st.subheader("📝 Câu trả lời từ Trợ lý AI")
-
-                st.success(answer)
-
+                st.success(response.text)
             else:
-
-                try:
-                    error_json = response.json()
-                    error_msg = error_json["error"]["message"]
-                except Exception:
-                    error_msg = response.text
-
-                st.error(
-                    f"Lỗi Gemini API ({response.status_code})\n\n{error_msg}"
-                )
+                st.error("Không nhận được phản hồi từ AI. Vui lòng thử lại!")
 
         except FileNotFoundError:
-            st.error("Không tìm thấy file DULIEUKHOANGOAINGU.xlsx")
-
+            st.error(f"Không tìm thấy file dữ liệu: {filepath}. Vui lòng kiểm tra lại đường dẫn file trên GitHub.")
         except Exception as e:
-            st.error(f"Hệ thống gặp lỗi:\n\n{str(e)}")
+            # Bắt các lỗi phân tích cú pháp hoặc lỗi hệ thống khác
+            st.error(f"Hệ thống gặp lỗi: {str(e)}")
