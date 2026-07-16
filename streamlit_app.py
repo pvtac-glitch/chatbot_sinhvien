@@ -42,12 +42,11 @@ def load_data_by_sheet(file_path, sheet_name):
 # ==========================================
 # 3. GIAO DIỆN ỨNG DỤNG (UI)
 # ==========================================
-st.title("Chatbot Hỗ Trợ Sinh Viên 🎓")
-st.subheader("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
+st.title("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ - DTHU")
 
 st.write(
-    "Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi. "
-    "AI sẽ tự động đọc dữ liệu khoa và tổng hợp câu trả lời chính xác nhất cho em."
+    "Chào em! Hãy chọn lĩnh vực mình quan tâm, nhập câu hỏi ô bên dưới"
+    "AI sẽ tự động đọc dữ liệu và tổng hợp câu trả lời chính xác nhất cho em."
 )
 
 lua_chon_tieng_viet = st.selectbox(
