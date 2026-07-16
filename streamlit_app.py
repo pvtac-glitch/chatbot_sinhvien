@@ -22,17 +22,16 @@ filepath = "DULIEUKHOANGOAINGU.xlsx"
 
 MENU_OPTIONS = {
     "Tổng quát về Khoa": "TONGQUAT",
-    "Giảng viên - Nhân viên": "GIANGVIEN",
+    "Giảng viên-Nhân viên": "GIANGVIEN",
     "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
-    "Ngoại ngữ 2 - Tin học": "NGOAINGUTINHOC",
+    "Ngoại ngữ 2-Tin học": "NGOAINGUTINHOC",
     "Nghiên cứu Khoa học": "NGHIENCUUKHOAHOC",
     "Học phí": "HOCPHI",
     "Học bổng": "HOCBONG",
-    "Thực tế - Thực tập": "THUCTAP",
-    "Công tác Xã hội": "CONGTACXAHOI",
-    "Ngoại khóa - Câu lạc bộ": "NGOAIKHOACAULACBO",
-    "Đoàn -Hội": "DOANHOI",
-    "Thể thao - Văn nghệ": "THETHAOVANNGHE"
+    "Thực tế-Thực tập": "THUCTAP",
+    "Ngoại khóa-Câu lạc bộ": "NGOAIKHOACAULACBO",
+    "Công tác Xã hội-Đoàn-Hội-Thể thao": "CONGTACXAHOI",
+    "Tuyển sinh": "TUYENSINH"
 }
 
 # Hàm tối ưu hóa việc đọc dữ liệu theo từng sheet và lưu vào cache
