@@ -45,7 +45,7 @@ def load_data_by_sheet(file_path, sheet_name):
 st.title("TRỢ LÝ AI KHOA NGOẠI NGỮ-DTHU")
 
 st.write(
-    "Chào em! Hãy chọn lĩnh vực mình quan tâm, nhập câu hỏi ô bên dưới " 
+    "Chào em! Hãy chọn lĩnh vực mình quan tâm, nhập câu hỏi ô bên dưới. " 
     "AI sẽ tự động đọc dữ liệu và tổng hợp câu trả lời chính xác nhất cho em."
 )
 
