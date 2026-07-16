@@ -42,7 +42,7 @@ def load_data_by_sheet(file_path, sheet_name):
 # ==========================================
 # 3. GIAO DIỆN ỨNG DỤNG (UI)
 # ==========================================
-st.title("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ - DTHU")
+st.title("TRỢ LÝ AI KHOA NGOẠI NGỮ-DTHU")
 
 st.write(
     "Chào em! Hãy chọn lĩnh vực mình quan tâm, nhập câu hỏi ô bên dưới"
