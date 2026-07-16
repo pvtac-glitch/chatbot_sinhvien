@@ -3,8 +3,63 @@ import google.generativeai as genai
 import pandas as pd
 import time  # Thêm thư viện thời gian
 
-# ... (Giữ nguyên phần config API và đọc file ở trên) ...
+# ==========================================
+# 1. CẤU HÌNH API KEY (Lấy từ Streamlit Secrets)
+# ==========================================
+try:
+    # Đảm bảo bạn đã điền API Key dạng AIzaSy... vào file .streamlit/secrets.toml
+    # Cấu trúc file secrets.toml: GEMINI_API_KEY = "AIzaSy..."
+    api_key = st.secrets["GEMINI_API_KEY"]
+    genai.configure(api_key=api_key)
+except KeyError:
+    st.error("Chưa cấu hình GEMINI_API_KEY trong Streamlit Secrets!")
+    st.stop()
 
+# ==========================================
+# 2. ĐỊNH NGHĨA DANH MỤC SHEET
+# ==========================================
+filepath = "DULIEUKHOANGOAINGU.xlsx"
+
+MENU_OPTIONS = {
+    "Tổng quát về Khoa": "TONGQUAT",
+    "Giảng viên - Nhân viên": "GIANGVIEN"
+    "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
+    "Ngoại ngữ 2 - Tin học": "NGOAINGUTINHOC"
+    "Nghiên cứu Khoa học": "NGHIENCUUKHOAHOC"
+    "Học phí": "HOCPHI",
+    "Học bổng": "HOCBONG",
+    "Thực tế - Thực tập": "THUCTAP",
+    "Công tác Xã hội": "CONGTACXAHOI"
+    "Ngoại khóa - Câu lạc bộ": "NGOAIKHOACAULACBO"
+    "Đoàn -Hội": "DOANHOI"
+    "Thể thao - Văn nghệ": "THETHAOVANNGHE"
+}
+
+# Hàm tối ưu hóa việc đọc dữ liệu theo từng sheet và lưu vào cache
+@st.cache_data
+def load_data_by_sheet(file_path, sheet_name):
+    return pd.read_excel(file_path, sheet_name=sheet_name, engine="openpyxl")
+
+# ==========================================
+# 3. GIAO DIỆN ỨNG DỤNG (UI)
+# ==========================================
+st.title("Chatbot Hỗ Trợ Sinh Viên 🎓")
+st.subheader("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
+
+st.write(
+    "Chào em! Hãy chọn lĩnh vực thắc mắc, nhập câu hỏi. "
+    "AI sẽ tự động đọc dữ liệu khoa và tổng hợp câu trả lời chính xác nhất cho em."
+)
+
+lua_chon_tieng_viet = st.selectbox(
+    "👉 Bước 1: Chọn lĩnh vực em muốn hỏi:",
+    list(MENU_OPTIONS.keys())
+)
+
+cau_hoi = st.text_input(
+    "👉 Bước 2: Nhập câu hỏi của em:",
+    placeholder="Ví dụ: Khoa có bao nhiêu ngành đào tạo?"
+)
 # ==========================================
 # KHỞI TẠO BỘ NHỚ ĐỆM (CACHE) & COOLDOWN TRONG SESSION
 # ==========================================
