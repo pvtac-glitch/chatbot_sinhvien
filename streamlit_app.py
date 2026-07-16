@@ -22,16 +22,16 @@ filepath = "DULIEUKHOANGOAINGU.xlsx"
 
 MENU_OPTIONS = {
     "Tổng quát về Khoa": "TONGQUAT",
-    "Giảng viên - Nhân viên": "GIANGVIEN"
+    "Giảng viên - Nhân viên": "GIANGVIEN",
     "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
-    "Ngoại ngữ 2 - Tin học": "NGOAINGUTINHOC"
-    "Nghiên cứu Khoa học": "NGHIENCUUKHOAHOC"
+    "Ngoại ngữ 2 - Tin học": "NGOAINGUTINHOC",
+    "Nghiên cứu Khoa học": "NGHIENCUUKHOAHOC",
     "Học phí": "HOCPHI",
     "Học bổng": "HOCBONG",
     "Thực tế - Thực tập": "THUCTAP",
-    "Công tác Xã hội": "CONGTACXAHOI"
-    "Ngoại khóa - Câu lạc bộ": "NGOAIKHOACAULACBO"
-    "Đoàn -Hội": "DOANHOI"
+    "Công tác Xã hội": "CONGTACXAHOI",
+    "Ngoại khóa - Câu lạc bộ": "NGOAIKHOACAULACBO",
+    "Đoàn -Hội": "DOANHOI",
     "Thể thao - Văn nghệ": "THETHAOVANNGHE"
 }
 
