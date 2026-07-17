@@ -42,11 +42,19 @@ def load_data_by_sheet(file_path, sheet_name):
 # ==========================================
 # 3. GIAO DIỆN ỨNG DỤNG (UI)
 # ==========================================
-st.markdown(
-    "<h1 style='color: #0066CC;'>Chatbot Hỗ Trợ Sinh Viên 🎓</h1>", 
-    unsafe_allow_html=True
-)
-st.subheader("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
+# MỤC 3: GIAO DIỆN ỨNG DỤNG
+col1, col2 = st.columns([1, 5])
+
+with col1:
+    # Thay 'logo_khoa.png' bằng tên file ảnh bạn đã lưu trong thư mục dự án
+    st.image("logo_khoa.png", width=100) 
+
+with col2:
+    st.markdown(
+        "<h1 style='color: #0066CC; margin-bottom: 0;'>Chatbot Hỗ Trợ Sinh Viên 🎓</h1>", 
+        unsafe_allow_html=True
+    )
+    st.subheader("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
 
 st.write(
     "Chào em! Hãy chọn lĩnh vực mình quan tâm, nhập câu hỏi ô bên dưới. " 
