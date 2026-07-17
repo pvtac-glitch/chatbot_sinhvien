@@ -103,7 +103,7 @@ if st.button("🚀 Trợ Lý AI Trả Lời"):
 
     if time_passed < cooldown_limit:
         remaining = int(cooldown_limit - time_passed)
-        st.warning(f"⚡ Anh?Chị hỏi nhanh quá! Vui lòng đợi {remaining} giây nữa để hệ thống xử lý nhé.")
+        st.warning(f"⚡ Anh/Chị hỏi nhanh quá! Vui lòng đợi {remaining} giây nữa để hệ thống xử lý nhé.")
         st.stop()
 
     # Cập nhật lại thời gian hỏi mới nhất
