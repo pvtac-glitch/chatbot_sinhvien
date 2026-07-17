@@ -57,14 +57,14 @@ with col2:
     st.subheader("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
 
 st.write(
-    "Chào em! Hãy chọn lĩnh vực mình quan tâm, nhập câu hỏi ô bên dưới. " 
-    "AI sẽ tự động đọc dữ liệu và tổng hợp câu trả lời chính xác nhất cho em."
+    "Chào Anh/Chị! Hãy chọn lĩnh vực mà mình quan tâm, sau đó nhập câu hỏi ô bên dưới. " 
+    "AI sẽ tự động đọc dữ liệu và tổng hợp câu trả lời chính xác nhất cho Anh/Chị."
 )
 
 # --- BƯỚC 1 ---
-st.markdown("👉 <span style='color: #0066CC; font-weight: bold;'>Bước 1: Chọn lĩnh vực em muốn hỏi:</span>", unsafe_allow_html=True)
+st.markdown("👉 <span style='color: #0066CC; font-weight: bold;'>Bước 1: Chọn lĩnh vực Anh/Chị muốn hỏi:</span>", unsafe_allow_html=True)
 lua_chon_tieng_viet = st.selectbox(
-    "Bước 1: Chọn lĩnh vực em muốn hỏi:", # Giữ label cho accessibility
+    "Bước 1: Chọn lĩnh vực Anh/Chị muốn hỏi:", # Giữ label cho accessibility
     list(MENU_OPTIONS.keys()),
     label_visibility="collapsed" # Giấu label mặc định đi
 )
@@ -72,7 +72,7 @@ lua_chon_tieng_viet = st.selectbox(
 # --- BƯỚC 2 ---
 st.markdown("👉 <span style='color: #0066CC; font-weight: bold;'>Bước 2: Nhập câu hỏi của em:</span>", unsafe_allow_html=True)
 cau_hoi = st.text_input(
-    "Bước 2: Nhập câu hỏi của em:", # Giữ label cho accessibility
+    "Bước 2: Nhập câu hỏi của Anh/Chị vào ô bên dưới:", # Giữ label cho accessibility
     placeholder="Ví dụ: Khoa có bao nhiêu ngành đào tạo?",
     label_visibility="collapsed" # Giấu label mặc định đi
 )
@@ -90,10 +90,10 @@ if "qa_cache" not in st.session_state:
 # ==========================================
 # XỬ LÝ KHI BẤM NÚT HỎI AI (ĐÃ TỐI ƯU)
 # ==========================================
-if st.button("🚀 Hỏi Trợ Lý AI"):
+if st.button("🚀 Trợ Lý AI Trả Lời"):
 
     if not cau_hoi.strip():
-        st.warning("Em vui lòng nhập câu hỏi trước nhé!")
+        st.warning("Anh/Chị vui lòng nhập câu hỏi trước nhé!")
         st.stop()
 
     # --- 1. KIỂM TRA COOLDOWN (CHỐNG SPAM) ---
@@ -103,7 +103,7 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
 
     if time_passed < cooldown_limit:
         remaining = int(cooldown_limit - time_passed)
-        st.warning(f"⚡ Em hỏi nhanh quá! Vui lòng đợi {remaining} giây nữa để hệ thống xử lý nhé.")
+        st.warning(f"⚡ Anh?Chị hỏi nhanh quá! Vui lòng đợi {remaining} giây nữa để hệ thống xử lý nhé.")
         st.stop()
 
     # Cập nhật lại thời gian hỏi mới nhất
@@ -124,7 +124,7 @@ if st.button("🚀 Hỏi Trợ Lý AI"):
         st.stop()
 
     # --- 3. GỌI GEMINI API NẾU LÀ CÂU HỎI MỚI ---
-    with st.spinner("🤖 AI đang đọc dữ liệu và xử lý..."):
+    with st.spinner("🤖 Vui lòng đợi. AI đang chuẩn bị câu trả lời..."):
         try:
             selected_sheet = MENU_OPTIONS[lua_chon_tieng_viet]
             df = load_data_by_sheet(filepath, selected_sheet)
@@ -135,7 +135,7 @@ Bạn là Trợ lý AI của Khoa Ngoại ngữ.
 Chỉ được phép trả lời dựa trên dữ liệu được cung cấp dưới đây.
 Không được tự bịa đặt thông tin nằm ngoài dữ liệu.
 Nếu không tìm thấy câu trả lời trong dữ liệu thì hãy trả lời chính xác câu sau:
-"Xin lỗi em, hiện tại Thầy/Cô chưa tìm thấy thông tin này trong cơ sở dữ liệu của Khoa. Em vui lòng liên hệ Văn phòng Khoa để được hỗ trợ thêm."
+"Xin lỗi Anh/Chị, hiện tại Trợ lý AI chưa tìm thấy thông tin này trong cơ sở dữ liệu của Khoa. Anh/Chị vui lòng liên hệ Văn phòng Khoa để được hỗ trợ thêm."
 
 DỮ LIỆU KHOA CUNG CẤP:
 {data_context}
@@ -145,7 +145,7 @@ CÂU HỎI CỦA SINH VIÊN:
 
 Yêu cầu câu trả lời:
 - Trả lời hoàn toàn bằng tiếng Việt.
-- Xưng hô lịch sự (Thầy/Cô - Em).
+- Xưng hô lịch sự (Trợ lý AI - Anh/Chị).
 - Ngắn gọn, rõ ràng, dễ đọc trên điện thoại.
 - Nếu có danh sách thông tin, bắt buộc dùng gạch đầu dòng.
 """
@@ -172,7 +172,7 @@ Yêu cầu câu trả lời:
             if "429" in err_str or "ResourceExhausted" in err_str:
                 st.error(
                     "⚠️ Hệ thống Trợ lý AI đang có số lượng truy cập quá tải. "
-                    "Để nhận thông tin ngay lập tức, em vui lòng liên hệ trực tiếp Văn phòng Khoa "
+                    "Để nhận thông tin ngay lập tức, Anh/Chị vui lòng liên hệ trực tiếp Văn phòng Khoa "
                     "hoặc thử lại sau 1-2 phút nhé!"
                 )
             else:
