@@ -53,7 +53,6 @@ st.write(
     "AI sẽ tự động đọc dữ liệu và tổng hợp câu trả lời chính xác nhất cho em."
 )
 
-# CODE MỚI
 lua_chon_tieng_viet = st.selectbox(
     "👉 <span style='color: #0066CC; font-weight: bold;'>Bước 1: Chọn lĩnh vực em muốn hỏi:</span>",
     list(MENU_OPTIONS.keys())
