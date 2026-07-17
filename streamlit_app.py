@@ -70,7 +70,7 @@ lua_chon_tieng_viet = st.selectbox(
 )
 
 # --- BƯỚC 2 ---
-st.markdown("👉 <span style='color: #0066CC; font-weight: bold;'>Bước 2: Nhập câu hỏi của em:</span>", unsafe_allow_html=True)
+st.markdown("👉 <span style='color: #0066CC; font-weight: bold;'>Bước 2: Nhập câu hỏi của Anh/Chị vào ô bên dưới:</span>", unsafe_allow_html=True)
 cau_hoi = st.text_input(
     "Bước 2: Nhập câu hỏi của Anh/Chị vào ô bên dưới:", # Giữ label cho accessibility
     placeholder="Ví dụ: Khoa có bao nhiêu ngành đào tạo?",
