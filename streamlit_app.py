@@ -42,7 +42,11 @@ def load_data_by_sheet(file_path, sheet_name):
 # ==========================================
 # 3. GIAO DIỆN ỨNG DỤNG (UI)
 # ==========================================
-st.title("TRỢ LÝ AI KHOA NGOẠI NGỮ-DTHU")
+st.markdown(
+    "<h1 style='color: #0066CC;'>Chatbot Hỗ Trợ Sinh Viên 🎓</h1>", 
+    unsafe_allow_html=True
+)
+st.subheader("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
 
 st.write(
     "Chào em! Hãy chọn lĩnh vực mình quan tâm, nhập câu hỏi ô bên dưới. " 
