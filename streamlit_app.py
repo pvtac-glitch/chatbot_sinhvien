@@ -53,13 +53,14 @@ st.write(
     "AI sẽ tự động đọc dữ liệu và tổng hợp câu trả lời chính xác nhất cho em."
 )
 
+# CODE MỚI
 lua_chon_tieng_viet = st.selectbox(
-    "👉 Bước 1: Chọn lĩnh vực em muốn hỏi:",
+    "👉 <span style='color: #0066CC; font-weight: bold;'>Bước 1: Chọn lĩnh vực em muốn hỏi:</span>",
     list(MENU_OPTIONS.keys())
 )
 
 cau_hoi = st.text_input(
-    "👉 Bước 2: Nhập câu hỏi của em:",
+    "👉 <span style='color: #0066CC; font-weight: bold;'>Bước 2: Nhập câu hỏi của em:</span>",
     placeholder="Ví dụ: Khoa có bao nhiêu ngành đào tạo?"
 )
 # ==========================================
