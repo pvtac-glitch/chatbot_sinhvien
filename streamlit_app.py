@@ -53,14 +53,20 @@ st.write(
     "AI sẽ tự động đọc dữ liệu và tổng hợp câu trả lời chính xác nhất cho em."
 )
 
+# --- BƯỚC 1 ---
+st.markdown("👉 <span style='color: #0066CC; font-weight: bold;'>Bước 1: Chọn lĩnh vực em muốn hỏi:</span>", unsafe_allow_html=True)
 lua_chon_tieng_viet = st.selectbox(
-    "👉 <span style='color: #0066CC; font-weight: bold;'>Bước 1: Chọn lĩnh vực em muốn hỏi:</span>",
-    list(MENU_OPTIONS.keys())
+    "Bước 1: Chọn lĩnh vực em muốn hỏi:", # Giữ label cho accessibility
+    list(MENU_OPTIONS.keys()),
+    label_visibility="collapsed" # Giấu label mặc định đi
 )
 
+# --- BƯỚC 2 ---
+st.markdown("👉 <span style='color: #0066CC; font-weight: bold;'>Bước 2: Nhập câu hỏi của em:</span>", unsafe_allow_html=True)
 cau_hoi = st.text_input(
-    "👉 <span style='color: #0066CC; font-weight: bold;'>Bước 2: Nhập câu hỏi của em:</span>",
-    placeholder="Ví dụ: Khoa có bao nhiêu ngành đào tạo?"
+    "Bước 2: Nhập câu hỏi của em:", # Giữ label cho accessibility
+    placeholder="Ví dụ: Khoa có bao nhiêu ngành đào tạo?",
+    label_visibility="collapsed" # Giấu label mặc định đi
 )
 # ==========================================
 # KHỞI TẠO BỘ NHỚ ĐỆM (CACHE) & COOLDOWN TRONG SESSION
