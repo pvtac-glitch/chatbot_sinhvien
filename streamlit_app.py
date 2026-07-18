@@ -99,7 +99,7 @@ if st.button("🚀 Trợ Lý AI Trả Lời"):
     # --- 1. KIỂM TRA COOLDOWN (CHỐNG SPAM) ---
     current_time = time.time()
     time_passed = current_time - st.session_state["last_ask_time"]
-    cooldown_limit = 10  # Số giây sinh viên phải đợi giữa 2 câu hỏi
+    cooldown_limit = 7  # Số giây sinh viên phải đợi giữa 2 câu hỏi
 
     if time_passed < cooldown_limit:
         remaining = int(cooldown_limit - time_passed)
