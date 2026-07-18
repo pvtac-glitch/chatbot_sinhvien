@@ -27,7 +27,7 @@ MENU_OPTIONS = {
     "Ngoại ngữ 2 - Tin học": "NGOAINGUTINHOC",
     "Nghiên cứu Khoa học": "NGHIENCUUKHOAHOC",
     "Học phí": "HOCPHI",
-    "Học bổng": "HOCBONG",
+    "Học bổng - Trợ cấp - Vay vốn học tập": "HOCBONG",
     "Thực tế - Thực tập": "THUCTAP",
     "Ngoại khóa - Câu lạc bộ": "NGOAIKHOACAULACBO",
     "Công tác Xã hội - Đoàn - Hội - Thể thao": "CONGTACXAHOI",
