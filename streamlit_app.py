@@ -99,7 +99,7 @@ if st.button("🚀 Trợ Lý AI Trả Lời"):
     # --- 1. KIỂM TRA COOLDOWN (CHỐNG SPAM) ---
     current_time = time.time()
     time_passed = current_time - st.session_state["last_ask_time"]
-    cooldown_limit = 7  # Số giây sinh viên phải đợi giữa 2 câu hỏi
+    cooldown_limit = 10  # Số giây sinh viên phải đợi giữa 2 câu hỏi
 
     if time_passed < cooldown_limit:
         remaining = int(cooldown_limit - time_passed)
@@ -150,7 +150,8 @@ Yêu cầu câu trả lời:
 - Nếu có danh sách thông tin, bắt buộc dùng gạch đầu dòng.
 """
 
-            model = genai.GenerativeModel("gemini-2.5-flash")
+            # ĐÃ CẬP NHẬT: Chuyển sang mô hình gemini-3.1-flash-lite siêu tốc độ và tiết kiệm chi phí
+            model = genai.GenerativeModel("gemini-3.1-flash-lite")
             response = model.generate_content(prompt_content)
 
             if response.text:
