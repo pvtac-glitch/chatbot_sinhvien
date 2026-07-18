@@ -7,8 +7,8 @@ import time  # Thêm thư viện thời gian
 # 1. CẤU HÌNH API KEY (Lấy từ Streamlit Secrets)
 # ==========================================
 try:
-    # Đảm bảo bạn đã điền API Key dạng AIzaSy... vào file .streamlit/secrets.toml
-    # Cấu trúc file secrets.toml: GEMINI_API_KEY = "AIzaSy..."
+    # Đảm bảo bạn đã điền API Key dạng AQ... vào file .streamlit/secrets.toml
+    # Cấu trúc file secrets.toml: GEMINI_API_KEY = "AQ..."
     api_key = st.secrets["GEMINI_API_KEY"]
     genai.configure(api_key=api_key)
 except KeyError:
@@ -21,17 +21,18 @@ except KeyError:
 filepath = "DULIEUKHOANGOAINGU.xlsx"
 
 MENU_OPTIONS = {
-    "Tổng quát về Khoa": "TONGQUAT",
-    "Giảng viên-Nhân viên": "GIANGVIEN",
+    "Giới thiệu Khoa Ngoại ngữ": "TONGQUAT",
+    "Giảng viên - Nhân viên": "GIANGVIEN",
     "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
-    "Ngoại ngữ 2-Tin học": "NGOAINGUTINHOC",
+    "Ngoại ngữ 2 - Tin học": "NGOAINGUTINHOC",
     "Nghiên cứu Khoa học": "NGHIENCUUKHOAHOC",
     "Học phí": "HOCPHI",
     "Học bổng": "HOCBONG",
-    "Thực tế-Thực tập": "THUCTAP",
-    "Ngoại khóa-Câu lạc bộ": "NGOAIKHOACAULACBO",
-    "Công tác Xã hội-Đoàn-Hội-Thể thao": "CONGTACXAHOI",
-    "Tuyển sinh": "TUYENSINH"
+    "Thực tế - Thực tập": "THUCTAP",
+    "Ngoại khóa - Câu lạc bộ": "NGOAIKHOACAULACBO",
+    "Công tác Xã hội - Đoàn - Hội - Thể thao": "CONGTACXAHOI",
+    "Tuyển sinh 2026": "TUYENSINH",
+    "Sự kiện đang diễn ra: "HOATDONGTRONGTUAN",
 }
 
 # Hàm tối ưu hóa việc đọc dữ liệu theo từng sheet và lưu vào cache
@@ -42,7 +43,6 @@ def load_data_by_sheet(file_path, sheet_name):
 # ==========================================
 # 3. GIAO DIỆN ỨNG DỤNG (UI)
 # ==========================================
-# MỤC 3: GIAO DIỆN ỨNG DỤNG
 col1, col2 = st.columns([1, 5])
 
 with col1:
@@ -54,7 +54,7 @@ with col2:
         "<h1 style='color: #0066CC; margin-bottom: 0;'>Chatbot Hỗ Trợ Sinh Viên 🎓</h1>", 
         unsafe_allow_html=True
     )
-    st.subheader("🤖 TRỢ LÝ AI KHOA NGOẠI NGỮ")
+    st.subheader("🤖 Trợ lý AI Khoa Ngoại Ngữ - Đại học Đồng Tháp")
 
 st.write(
     "Chào Anh/Chị! Hãy chọn lĩnh vực mà mình quan tâm, sau đó nhập câu hỏi ô bên dưới. " 
