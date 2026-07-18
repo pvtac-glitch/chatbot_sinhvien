@@ -32,7 +32,7 @@ MENU_OPTIONS = {
     "Ngoại khóa - Câu lạc bộ": "NGOAIKHOACAULACBO",
     "Công tác Xã hội - Đoàn - Hội - Thể thao": "CONGTACXAHOI",
     "Tuyển sinh 2026": "TUYENSINH",
-    "Sự kiện đang diễn ra: "HOATDONGTRONGTUAN"
+    "Sự kiện đang diễn ra": "HOATDONGTRONGTUAN"
 }
 
 # Hàm tối ưu hóa việc đọc dữ liệu theo từng sheet và lưu vào cache
