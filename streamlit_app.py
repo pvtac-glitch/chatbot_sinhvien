@@ -32,6 +32,7 @@ MENU_OPTIONS = {
     "Ngoại khóa - Câu lạc bộ": "NGOAIKHOACAULACBO",
     "Công tác Xã hội - Đoàn - Hội - Thể thao": "CONGTACXAHOI",
     "Tuyển sinh 2026": "TUYENSINH",
+    "Vấn đề được quan tâm": "HOIDAPNHANH",
     "Sự kiện đang diễn ra": "HOATDONGTRONGTUAN"
 }
 
