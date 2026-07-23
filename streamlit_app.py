@@ -33,7 +33,7 @@ MENU_OPTIONS = {
     "Công tác Xã hội - Đoàn - Hội - Thể thao": "CONGTACXAHOI",
     "Tuyển sinh 2026": "TUYENSINH",
     "Vấn đề được quan tâm": "HOIDAPNHANH",
-    "Sự kiện đang diễn ra": "HOATDONGTRONGTUAN"
+    "Hoạt động trong tuần - Lịch thi HK3": "HOATDONGTRONGTUAN"
 }
 
 # Hàm tối ưu hóa việc đọc dữ liệu theo từng sheet và lưu vào cache
