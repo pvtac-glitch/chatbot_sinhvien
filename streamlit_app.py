@@ -23,7 +23,7 @@ filepath = "DULIEUKHOANGOAINGU.xlsx"
 MENU_OPTIONS = {
     "Giới thiệu Khoa Ngoại ngữ": "TONGQUAT",
     "Giảng viên - Nhân viên": "GIANGVIEN",
-    "Chương trình đào tạo": "CHUONGTRINHDAOTAO",
+    "Chương trình - Quy chế đào tạo": "CHUONGTRINHDAOTAO",
     "Ngoại ngữ 2 - Tin học": "NGOAINGUTINHOC",
     "Nghiên cứu Khoa học": "NGHIENCUUKHOAHOC",
     "Học phí": "HOCPHI",
